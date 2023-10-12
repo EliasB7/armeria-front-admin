@@ -1,0 +1,75 @@
+<nav class="Nav">
+  <h1>LISTA DE OBJETOS</h1>
+</nav>
+
+<mat-form-field class="example-form-field">
+  <input matInput type="text" [(ngModel)]="value" />
+  <button
+    *ngIf="value"
+    matSuffix
+    mat-icon-button
+    aria-label="Clear"
+    (click)="value = ''"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</mat-form-field>
+
+<mat-tab-group
+  mat-stretch-tabs="false"
+  mat-align-tabs="center"
+  (selectedTabChange)="selectCategory($event)"
+>
+  <mat-tab label="ARMA LARGA"></mat-tab>
+  <mat-tab label="ARMA CORTA"></mat-tab>
+  <mat-tab label="MUNICION"></mat-tab>
+  <mat-tab label="ACCESORIOS"></mat-tab>
+  <mat-tab label="ROPA"></mat-tab>
+  <mat-tab label="RECARGA"></mat-tab>
+</mat-tab-group>
+
+<table class="table-container">
+  <thead>
+    <tr class="table">
+      <th class="bordered-cell">Nombre</th>
+      <th class="bordered-cell">Marca</th>
+      <th class="bordered-cell">Precio</th>
+      <th class="bordered-cell">Cantidad</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of filteredItems">
+      <td class="bordered-cell">
+        {{ item.name }}
+      </td>
+      <td class="bordered-cell">
+        {{ item.brand }}
+      </td>
+      <td class="bordered-cell">
+        {{ item.price }}
+      </td>
+      <td class="bordered-cell">
+        {{ item.quantity }}
+      </td>
+      <td class="bordered-cell"></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- <svg
+xmlns="http://www.w3.org/2000/svg"
+class="icon icon-tabler icon-tabler-dots-vertical"
+width="24"
+height="24"
+viewBox="0 0 24 24"
+stroke-width="2"
+stroke="currentColor"
+fill="none"
+stroke-linecap="round"
+stroke-linejoin="round"
+>
+<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+<path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+<path d="M12 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+<path d="M12 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+</svg> -->
