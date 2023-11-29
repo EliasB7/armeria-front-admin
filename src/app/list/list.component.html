@@ -3,7 +3,7 @@
 </nav>
 
 <mat-form-field class="example-form-field">
-  <input matInput type="text" [(ngModel)]="value" />
+  <input matInput type="text" />
   <button
     *ngIf="value"
     matSuffix
@@ -15,6 +15,11 @@
   </button>
 </mat-form-field>
 
+<div class="buttom-create">
+  <button (click)="openCreateModal(templateCreate)" class="btn btn-primary">
+    Crear Nuevo Elemento
+  </button>
+</div>
 <mat-tab-group
   mat-stretch-tabs="false"
   mat-align-tabs="center"
@@ -28,48 +33,492 @@
   <mat-tab label="RECARGA"></mat-tab>
 </mat-tab-group>
 
-<table class="table-container">
-  <thead>
-    <tr class="table">
-      <th class="bordered-cell">Nombre</th>
-      <th class="bordered-cell">Marca</th>
-      <th class="bordered-cell">Precio</th>
-      <th class="bordered-cell">Cantidad</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let item of filteredItems">
-      <td class="bordered-cell">
-        {{ item.name }}
-      </td>
-      <td class="bordered-cell">
-        {{ item.brand }}
-      </td>
-      <td class="bordered-cell">
-        {{ item.price }}
-      </td>
-      <td class="bordered-cell">
-        {{ item.quantity }}
-      </td>
-      <td class="bordered-cell"></td>
-    </tr>
-  </tbody>
-</table>
+<div class="table-div">
+  <table class="table-container">
+    <thead>
+      <tr class="table">
+        <th class="bordered-cell">Nombre</th>
+        <th class="bordered-cell">Marca</th>
+        <th class="bordered-cell">Precio</th>
+        <th class="bordered-cell">Cantidad</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of filteredItems">
+        <td class="bordered-cell">
+          {{ item.name }}
+        </td>
+        <td class="bordered-cell">
+          {{ item.brand }}
+        </td>
+        <td class="bordered-cell">
+          {{ item.price }}
+        </td>
+        <td class="bordered-cell">
+          {{ item.quantity }}
+        </td>
+        <td class="bordered-cell-edit">
+          <div class="row">
+            <div class="col">
+              <div ngbDropdown class="d-inline-block">
+                <button
+                  type="button"
+                  class="btn btn-outline-primary"
+                  id="dropdownForm1"
+                  ngbDropdownToggle
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="icon icon-tabler icon-tabler-dots-vertical"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    stroke-width="2"
+                    stroke="currentColor"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                    <path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                    <path d="M12 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                    <path d="M12 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                  </svg>
+                </button>
+                <div
+                  ngbDropdownMenu
+                  class="flex row"
+                  aria-labelledby="dropdownForm1"
+                >
+                  <button
+                    (click)="openModal(template, item)"
+                    class="p-2 btn btn-dark border"
+                  >
+                    EDITAR
+                  </button>
+                  <button
+                    (click)="deleteItem(item)"
+                    class="p-2 btn btn-dark border"
+                  >
+                    ELIMINAR
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-<!-- <svg
-xmlns="http://www.w3.org/2000/svg"
-class="icon icon-tabler icon-tabler-dots-vertical"
-width="24"
-height="24"
-viewBox="0 0 24 24"
-stroke-width="2"
-stroke="currentColor"
-fill="none"
-stroke-linecap="round"
-stroke-linejoin="round"
->
-<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-<path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
-<path d="M12 19m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
-<path d="M12 5m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
-</svg> -->
+<ng-template #template>
+  <div class="modal-header">
+    <h1 class="form-title">DESCRIPCION</h1>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef?.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+
+  <div [formGroup]="itemForm" *ngIf="itemForm" class="form-container">
+    <div class="form-field">
+      <label for="name">Nombre:</label>
+      <span *ngIf="!editMode">{{ modalItem.name }}</span>
+      <input
+        *ngIf="editMode"
+        formControlName="name"
+        [(ngModel)]="modalItem.name"
+        id="name"
+      />
+      <p
+        *ngIf="
+          editMode &&
+          itemForm.get('name')?.invalid &&
+          itemForm.get('name')?.touched
+        "
+        class="error-message"
+      >
+        El nombre es requerido y debe tener entre 3 y 50 caracteres.
+      </p>
+    </div>
+
+    <div class="form-field">
+      <label for="model">Modelo:</label>
+      <span *ngIf="!editMode">{{ modalItem.model }}</span>
+      <input
+        *ngIf="editMode"
+        formControlName="model"
+        [(ngModel)]="modalItem.model"
+        id="model"
+      />
+
+      <p
+        *ngIf="
+          editMode &&
+          itemForm.get('model')?.invalid &&
+          itemForm.get('model')?.touched
+        "
+        class="error-message"
+      >
+        El modelo es requerido y debe tener entre 2 y 30 caracteres.
+      </p>
+    </div>
+
+    <div class="form-field">
+      <label for="brand">Marca:</label>
+      <span *ngIf="!editMode">{{ modalItem.brand }}</span>
+      <input
+        *ngIf="editMode"
+        formControlName="brand"
+        [(ngModel)]="modalItem.brand"
+        id="brand"
+      />
+
+      <p
+        *ngIf="
+          editMode &&
+          itemForm.get('brand')?.invalid &&
+          itemForm.get('brand')?.touched
+        "
+        class="error-message"
+      >
+        La marca es requerida y debe tener entre 2 y 30 caracteres.
+      </p>
+    </div>
+
+    <div class="form-field">
+      <label for="color">Color:</label>
+      <span *ngIf="!editMode">{{ modalItem.color }}</span>
+      <input
+        *ngIf="editMode"
+        formControlName="color"
+        [(ngModel)]="modalItem.color"
+        id="color"
+      />
+
+      <p
+        *ngIf="
+          editMode &&
+          itemForm.get('color')?.invalid &&
+          itemForm.get('color')?.touched
+        "
+        class="error-message"
+      >
+        El color es requerido y debe tener entre 2 y 20 caracteres.
+      </p>
+    </div>
+
+    <div class="form-field">
+      <label for="image">Imagen:</label>
+      <img *ngIf="!editMode" [src]="modalItem.image" alt="Imagen" />
+
+      <!-- <input
+        *ngIf="editMode"
+        formControlName="image"
+        type="file"
+        [(ngModel)]="modalItem.image"
+      /> -->
+
+      <ngx-dropzone (change)="onSelect($event)" *ngIf="editMode"
+        ><ngx-dropzone-image-preview
+          ngProjectAs="ngx-dropzone-preview"
+          *ngFor="let f of files"
+          [file]="f"
+        >
+          <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+        </ngx-dropzone-image-preview></ngx-dropzone
+      >
+
+      <p
+        *ngIf="
+          editMode &&
+          itemForm.get('image')?.invalid &&
+          itemForm.get('image')?.touched
+        "
+        class="error-message"
+      >
+        La URL de la imagen no es válida.
+      </p>
+    </div>
+
+    <div class="form-field">
+      <label for="quantity">Disponibles:</label>
+      <span *ngIf="!editMode">{{ modalItem.quantity }}</span>
+      <input
+        *ngIf="editMode"
+        formControlName="quantity"
+        [(ngModel)]="modalItem.quantity"
+        id="quantity"
+      />
+
+      <p
+        *ngIf="
+          editMode &&
+          itemForm.get('quantity')?.invalid &&
+          itemForm.get('quantity')?.touched
+        "
+        class="error-message"
+      >
+        La cantidad debe ser un número entre 1 y 1000.
+      </p>
+    </div>
+
+    <div class="form-field">
+      <label for="description">Descripcion:</label>
+      <span *ngIf="!editMode">{{ modalItem.description }}</span>
+      <input
+        *ngIf="editMode"
+        formControlName="description"
+        [(ngModel)]="modalItem.description"
+        id="description"
+      />
+
+      <p
+        *ngIf="
+          editMode &&
+          itemForm.get('description')?.invalid &&
+          itemForm.get('description')?.touched
+        "
+        class="error-message"
+      >
+        El description es requerida y debe tener entre 10 y 500 caracteres.
+      </p>
+    </div>
+
+    <div class="form-field">
+      <label for="price">Precio:</label>
+      <span *ngIf="!editMode">{{ modalItem.price }}</span>
+      <input
+        *ngIf="editMode"
+        formControlName="price"
+        [(ngModel)]="modalItem.price"
+        id="price"
+      />
+
+      <p
+        *ngIf="
+          editMode &&
+          itemForm.get('price')?.invalid &&
+          itemForm.get('price')?.touched
+        "
+        class="error-message"
+      >
+        El precio es requerido y debe ser un número válido.
+      </p>
+    </div>
+
+    <div class="form-field">
+      <label for="category">Categoria:</label>
+      <span *ngIf="!editMode">{{ modalItem.category }}</span>
+      <div ngbDropdown class="d-inline-block" *ngIf="editMode">
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          id="dropdownBasic1"
+          ngbDropdownToggle
+        >
+          {{ modalItem.category }}
+        </button>
+        <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+          <button
+            ngbDropdownItem
+            *ngFor="let category of categories"
+            (click)="modalItem.category = category"
+          >
+            {{ category }}
+          </button>
+        </div>
+      </div>
+
+      <p
+        *ngIf="
+          editMode &&
+          itemForm.get('category')?.invalid &&
+          itemForm.get('category')?.touched
+        "
+        class="error-message"
+      >
+        La categoria es requerida
+      </p>
+    </div>
+
+    <!-- <div class="form-field">
+      <label for="subCategory">Subcategoria:</label>
+      <span *ngIf="!editMode">{{ modalItem.subCategory }}</span>
+      <input
+        *ngIf="editMode"
+        formControlName="subCategory"
+        [(ngModel)]="modalItem.subCategory"
+        id="subCategory"
+      />
+    </div> -->
+
+    <div class="form-field">
+      <input
+        type="checkbox"
+        *ngIf="editMode"
+        formControlName="isAvailable"
+        [(ngModel)]="modalItem.isAvailable"
+        id="isAvailable"
+      />
+      <label *ngIf="editMode" for="isAvailable">Disponible</label>
+    </div>
+
+    <div class="form-field">
+      <input
+        type="checkbox"
+        *ngIf="editMode"
+        formControlName="showPrice"
+        [(ngModel)]="modalItem.showPrice"
+        id="showPrice"
+      />
+      <label *ngIf="editMode" for="showPrice">Mostrar Precio</label>
+    </div>
+
+    <div class="form-buttons">
+      <button *ngIf="!editMode" (click)="editMode = true" class="edit-button">
+        Editar
+      </button>
+      <button *ngIf="editMode" (click)="updateItem()" class="save-button">
+        Guardar
+      </button>
+      <button *ngIf="editMode" (click)="editMode = false" class="cancel-button">
+        Cancelar
+      </button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #templateCreate>
+  <div class="modal-header">
+    <h1>Crear Nuevo Elemento</h1>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef?.hide()"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+
+  <div [formGroup]="itemForm">
+    <p>
+      Nombre:
+      <input formControlName="name" [(ngModel)]="modalItem.name" required />
+    </p>
+    <p>
+      Modelo:
+      <input formControlName="model" [(ngModel)]="modalItem.model" />
+    </p>
+    <p>
+      Marca:
+      <input formControlName="brand" [(ngModel)]="modalItem.brand" />
+    </p>
+    <p>
+      Color:
+      <input formControlName="color" [(ngModel)]="modalItem.color" />
+    </p>
+    <p>
+      Imagen:
+      <!-- <input
+        formControlName="image"
+        type="file"
+        [(ngModel)]="modalItem.image"
+      /> -->
+      <ngx-dropzone (change)="onSelect($event)"
+        ><ngx-dropzone-image-preview
+          ngProjectAs="ngx-dropzone-preview"
+          *ngFor="let f of files"
+          [file]="f"
+        >
+          <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+        </ngx-dropzone-image-preview></ngx-dropzone
+      >
+    </p>
+
+    <p>
+      Descripcion:
+      <input
+        formControlName="description"
+        [(ngModel)]="modalItem.description"
+      />
+    </p>
+    <p>
+      Cantidad:
+      <input formControlName="quantity" [(ngModel)]="modalItem.quantity" />
+    </p>
+    <p>
+      Precio:
+      <input formControlName="price" [(ngModel)]="modalItem.price" />
+    </p>
+
+    <div class="form-field">
+      <label for="category">Categoria:</label>
+      <div ngbDropdown class="d-inline-block">
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          id="dropdownBasic1"
+          ngbDropdownToggle
+        >
+          {{ modalItem.category }}
+        </button>
+        <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+          <button
+            ngbDropdownItem
+            *ngFor="let category of categories"
+            (click)="modalItem.category = category"
+          >
+            {{ category }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- <p>
+      SubCategorias:
+      <input
+        formControlName="subCategory"
+        [(ngModel)]="modalItem.subCategory"
+      />
+    </p> -->
+    <p>
+      Disponible?
+      <input
+        formControlName="isAvailable"
+        [(ngModel)]="modalItem.isAvailable"
+      />
+    </p>
+    <p>
+      Mostrar Precio?
+      <input formControlName="showPrice" [(ngModel)]="modalItem.showPrice" />
+    </p>
+
+    <button (click)="createNewItem()">Crear</button>
+  </div>
+</ng-template>
+
+<ng-template #errorModalTemplate>
+  <div class="modal-header">
+    <h1 class="form-title">Error</h1>
+    <button
+      type="button"
+      class="btn-close close pull-right"
+      aria-label="Close"
+      (click)="modalRef?.hide(); hasErrors = false"
+    >
+      <span aria-hidden="true" class="visually-hidden">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>
+      ¡Hay errores en el formulario! Por favor, corrige los campos con errores.
+    </p>
+  </div>
+</ng-template>
