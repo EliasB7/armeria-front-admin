@@ -1,0 +1,26 @@
+<div class="login-container">
+  <div class="login">
+    <h2>Iniciar sesión</h2>
+    <form [formGroup]="loginForm">
+      <label for="username">username</label>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        required
+        formControlName="username"
+      />
+
+      <label for="password">Contraseña</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        required
+        formControlName="password"
+      />
+    </form>
+
+    <button class="login-button" (click)="onLogin()">Ingresar</button>
+  </div>
+</div>
