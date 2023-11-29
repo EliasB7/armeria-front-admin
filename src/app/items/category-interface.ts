@@ -6,3 +6,5 @@ export enum CategoryInterface {
   Gunpowder = 'Polvora',
   Reload = 'Recarga',
 }
+
+// prueba bit bucket
