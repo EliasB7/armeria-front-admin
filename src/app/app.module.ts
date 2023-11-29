@@ -10,9 +10,12 @@ import { AppRoutingModule } from './app.routing.module';
 import { HttpClientModule } from '@angular/common/http';
 import { ListComponent } from './list/list.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { NotificationsComponent } from './notifications/notifications.component';
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, HomeComponent],
+  declarations: [AppComponent, LoginComponent, HomeComponent, NotificationsComponent],
   imports: [
     BrowserModule,
     ReactiveFormsModule,
@@ -21,6 +24,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     FormsModule,
     BrowserAnimationsModule,
     MatTabsModule,
+    NgbModule,
+    ModalModule.forRoot(),
   ],
   providers: [LoginService],
   bootstrap: [AppComponent],
